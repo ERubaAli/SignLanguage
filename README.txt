@@ -1,10 +1,12 @@
+you can use the signGuide.docx to try the 7 words that I used to train the model on 
+
 model file:
 1- gets data to form the coordinates.csv file as the dataset
 2- trains the model using Ridgeclassifier
 3- save the model as signL.pkl
 
 
-api1 file: (run this file )
+api1 file: (run this file first)
 1- route for prediction
 2- route for creating the table in sqlite3
 3- route for inserting values in database and firebase
