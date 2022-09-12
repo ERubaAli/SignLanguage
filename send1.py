@@ -1,5 +1,5 @@
 import requests
-from time import ctime, sleep
+from time import  sleep
 import mediapipe as mp
 import cv2
 import pandas as pd 
@@ -115,15 +115,9 @@ sday=cTime.strftime('%d')
 
 #inserting values to database and firebase
 res=requests.post('http://127.0.0.1:5000/inValues',
-                  params={'myTable':'Sign',
-                  'colm':
-                  '(Word,wHour,wMin,syear,smonth,sday)',
-                  'val':
-                  f'''("{fListStr}" , "{sH}","{sM}",
-                  "{syear}","{smonth}","{sday}")''',
+                  params={'signW':f'{fListStr}','sH':f'{sH}' ,'sM':f'{sM}',
                   'syear':f'{syear}','smonth':f'{smonth}',
-                  'sday':f'{sday}','stime':f'{stime}',
-                  'signW':f'{fListStr}'})
+                  'sday':f'{sday}','stime':f'{stime}' })
 
 
 print (res.text)
