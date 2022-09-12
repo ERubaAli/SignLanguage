@@ -1,7 +1,6 @@
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 import cv2
 import mediapipe as mp
@@ -10,9 +9,12 @@ import csv
 import pandas as pd
 from sklearn.preprocessing import StandardScaler 
 from sklearn.linear_model import LogisticRegression,RidgeClassifier
-from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import accuracy_score
 import pickle
+import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
+from sklearn.model_selection import cross_val_score
+
 
 
 
@@ -102,7 +104,7 @@ with mp_hands.Hands(
 cap.release()
 # '''
 #train
-'''
+# '''
 #reading the file into a dataframe
 df=pd.read_csv('coordinates.csv')
 #Drop columns which contain missing value
@@ -113,16 +115,18 @@ x=df.drop('class',axis=1)
 #save y as output which is the class column (target value)
 y=df['class']
 
+target_names = ['I','ThankU','Bathroom','Fine','No','Help','Yes']#for the confusion matrix
+
 x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.3,random_state=200)
 
 #preprocessing function to standarize data
 #subtracts the mean and divides it by standard deviation
-#the model will not be biased to certain features more than others
+#the model will not be biased to certain features
 sc = StandardScaler()
 X_train = sc.fit_transform(x_train)
 X_test = sc.transform(x_test)
 
-#the model chosen after trying other models 
+#Ridge is a good default  
 model =RidgeClassifier()
 model.fit(X_train, y_train)
 
@@ -131,11 +135,23 @@ y_pred = model.predict(X_test)
 test_acc = accuracy_score(y_test, y_pred)
 print('The Accuracy for Test Set is {}'.format(test_acc*100))
 
-#saving the model after training as signL.pkl
-with open('signL.pkl','wb')as f:
-    pickle.dump(model,f)
+cv_scores = cross_val_score(model, X_train, y_train, cv=10)
+print("cross validation average score: {}".format( cv_scores.mean()*100))
 
-'''
+fig, ax = plt.subplots(figsize=(10, 5))
+ConfusionMatrixDisplay.from_predictions(y_test, y_pred, ax=ax)
+ax.xaxis.set_ticklabels(target_names)
+ax.yaxis.set_ticklabels(target_names)
+_ = ax.set_title(
+    f"Confusion Matrix for {model.__class__.__name__}"
+)
+plt.show()
+
+# saving the model after training as signL.pkl
+# with open('signL.pkl','wb')as f:
+#     pickle.dump(model,f)
+
+# '''
 
 
 
